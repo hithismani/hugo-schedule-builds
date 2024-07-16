@@ -1,0 +1,83 @@
+{{ $now := time.Now }}
+{{ $.Scratch.Add "datesSlice" slice }}
+{{/* Iterate over rebuild_at data */}}
+{{ range $i, $e := $.Site.Data.rebuild_at }}
+    {{ range $e.rebuild_at }}
+        {{ with .date }}
+            {{/* If the date is in the future, add it to the datesSlice */}}
+            {{ if gt (time .) $now }}
+                {{ $.Scratch.Add "datesSlice" (dict "date" (time .) "source" "rebuild_at") }}
+            {{ end }}
+        {{ end }}
+        {{ with .expiryDate }}
+            {{/* If the expiry date is in the future, add it to the datesSlice */}}
+            {{ if gt (time .) $now }}
+                {{ $.Scratch.Add "datesSlice" (dict "date" (time .) "source" "rebuild_at") }}
+            {{ end }}
+        {{ end }}
+        {{ with .publishDate }}
+            {{/* If the publish date is in the future, add it to the datesSlice */}}
+            {{ if gt (time .) $now }}
+                {{ $.Scratch.Add "datesSlice" (dict "date" (time .) "source" "rebuild_at") }}
+            {{ end }}
+        {{ end }}
+    {{ end }}
+{{ end }}
+
+{{/* Iterate over all posts */}}
+{{ range .Site.RegularPages }}
+    {{$section := .Section}}
+    {{ with .Params.date }}
+        {{/* If the post date is in the future, add it to the datesSlice */}}
+        {{ if gt (time .) $now }}
+            {{ $.Scratch.Add "datesSlice" (dict "date" (time .) "source" $section) }}
+        {{ end }}
+    {{ end }}
+    {{ with .Params.expiryDate }}
+        {{/* If the expiry date is in the future, add it to the datesSlice */}}
+        {{ if gt (time .) $now }}
+            {{ $.Scratch.Add "datesSlice" (dict "date" (time .) "source" $section) }}
+        {{ end }}
+    {{ end }}
+    {{ with .Params.publishDate }}
+        {{/* If the publish date is in the future, add it to the datesSlice */}}
+        {{ if gt (time .) $now }}
+            {{ $.Scratch.Add "datesSlice" (dict "date" (time .) "source" $section) }}
+        {{ end }}
+    {{ end }}
+{{ end }}
+
+{{/* Iterate over all events */}}
+{{ range where .Site.RegularPages "Section" "events" }}
+    {{$section := .Section}}
+    {{ with .Params.date }}
+        {{/* If the event date is in the future, add it to the datesSlice */}}
+        {{ if gt (time .) $now }}
+            {{ $.Scratch.Add "datesSlice" (dict "date" (time .) "source" $section) }}
+        {{ end }}
+    {{ end }}
+    {{ with .Params.expiryDate }}
+        {{/* If the expiry date is in the future, add it to the datesSlice */}}
+        {{ if gt (time .) $now }}
+            {{ $.Scratch.Add "datesSlice" (dict "date" (time .) "source" $section) }}
+        {{ end }}
+    {{ end }}
+    {{ with .Params.publishDate }}
+        {{/* If the publish date is in the future, add it to the datesSlice */}}
+        {{ if gt (time .) $now }}
+            {{ $.Scratch.Add "datesSlice" (dict "date" (time .) "source" $section) }}
+        {{ end }}
+    {{ end }}
+    {{ with .Params.event_start_date }}
+        {{/* If the event start date is in the future, add it to the datesSlice */}}
+        {{ if gt (time .) $now }}
+            {{ $.Scratch.Add "datesSlice" (dict "date" (time .) "source" $section) }}
+        {{ end }}
+    {{ end }}
+{{ end }}
+
+{{/* Sort the slice by the "date" field */}}
+{{ $sortedDates := sort  ($.Scratch.Get "datesSlice") "date" }}
+
+{{/* Example of how to use the slice later */}}
+{{ $sortedDates | jsonify }}
